@@ -45,8 +45,3 @@ class Game:
                 self.dying[i]=self.dying[i]-1
 
         self.cells=new_cells
-
-
-
-
-
