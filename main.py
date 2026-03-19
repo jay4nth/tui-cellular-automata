@@ -1,17 +1,26 @@
-from textual.app import App, ComposeResult
-from textual.widgets import Label, Button
+from textual.app import App
+from patterns import generate_random
+from game import Game
+from grid import Grid
+from playback import PlaybackControls
 
-class MyApp(App):
-    
+class Board(App):
+    def __init__(self):
+        super().__init__()
+        self.game=Game(cells=set())
     def compose(self):
-        yield Label("Hello World, First Commit")
-        yield Button("Exit",id="exited",variant="primary")
+        yield Grid(self.game)
+        # yield PlaybackControls()
+    
+    def on_mount(self):
+        self.game.cells=generate_random(self.size.width,self.size.height)
+        self.set_interval(0.1, self.tick)
+
+    def tick(self):
+        self.game.step()
+        grid=self.query_one(Grid)
+        grid.refresh()
         
-
-    def on_button_pressed(self, event):
-        self.exit(event.button.id)
-
-if __name__=="__main__":
-    app=MyApp()
-    reply=app.run()
-    print(reply)
+if __name__ == "__main__":
+    app=Board()
+    app.run()

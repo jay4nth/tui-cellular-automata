@@ -4,12 +4,9 @@ from rich.color import Color
 from rich.segment import Segment
 from rich.style import Style
 
-from textual.app import App
 from textual.strip import Strip
 from textual.widget import Widget
 
-from patterns import generate_random
-from game import Game
 
 empty = Style.parse("#454545")
 
@@ -29,10 +26,6 @@ def interpolate(t, stops):
         int(b1 + (b2 - b1) * local_t),
     )
 
-# LIVE  = [(236,243,158),(144,169,85),(79,119,45),(49,87,44),(19,42,19)]
-# DEAD1 = [(128,137,48),(63,70,47),(37,48,27),(26,37,24),(11,17,11)]
-# DEAD2 = [(80,82,67),(48,49,46),(31,33,29),(24,26,24),(10,11,10)]
-# DEAD3 = [(70,70,70),(46,46,46),(29,29,29),(24,24,24),(10,10,10)]
 
 # colors palettes -- GREEN
 LIVE  = [(236,243,158),(144,169,85),(79,119,45),(144,169,85),(236,243,158)]
@@ -43,39 +36,6 @@ LIVE = LIVE[::-1]
 DEAD1=DEAD1[::-1]
 DEAD2=DEAD2[::-1]
 DEAD3=DEAD3[::-1]
-
-
-# LIVE = [
-#     (80,  5,   0),    # edge    — deep red
-#     (160, 20,  5),    # middle3 — dark red
-#     (220, 60,  10),   # middle2 — red-orange  ← less green here
-#     (255, 100, 10),   # middle1 — vivid orange ← less green here
-#     (255, 160, 20),   # center  — bright orange, no yellow
-# ]
-
-# DEAD1 = [
-#     (120, 60,  10),
-#     (80,  35,  5),
-#     (55,  20,  3),
-#     (35,  10,  1),
-#     (15,  3,   0),
-# ]
-
-# DEAD2 = [
-#     (70,  30,  5),
-#     (45,  18,  3),
-#     (30,  10,  2),
-#     (18,  5,   0),
-#     (8,   2,   0),
-# ]
-
-# DEAD3 = [
-#     (35,  12,  2),
-#     (22,  7,   1),
-#     (14,  4,   0),
-#     (8,   2,   0),
-#     (3,   1,   0),
-# ]
 
 
 class Grid(Widget):
@@ -115,23 +75,3 @@ class Grid(Widget):
                 else:
                     row.append(Segment("··",empty))
         return Strip(row)
-
-class Board(App):
-    def __init__(self):
-        super().__init__()
-        self.game=Game(cells=set())
-    def compose(self):
-        yield Grid(self.game)
-    
-    def on_mount(self):
-        self.game.cells=generate_random(self.size.width,self.size.height)
-        self.set_interval(0.1, self.tick)
-
-    def tick(self):
-        self.game.step()
-        grid=self.query_one(Grid)
-        grid.refresh()
-        
-if __name__ == "__main__":
-    app=Board()
-    app.run()
